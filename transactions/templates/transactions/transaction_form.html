@@ -1,0 +1,20 @@
+{% extends "transactions/base.html" %}
+{% block title %}New transaction | Digital Receipt System{% endblock %}
+{% block breadcrumb %}<a href="{% url 'transaction_list' %}">Transactions</a> / New{% endblock %}
+{% block content %}
+<section class="page-head"><div><div class="eyebrow">Sales entry</div><h1>Record a transaction</h1><p class="subtext">Enter items sold. The system calculates totals and creates a unique receipt.</p></div><a class="btn btn-light" href="{% url 'transaction_list' %}">Cancel</a></section>
+<form method="post" class="panel">{% csrf_token %}<div class="panel-head"><h2>Transaction details</h2><span class="muted">All amounts in UGX</span></div><div class="panel-body">
+<div class="form-grid"><div class="field"><label for="customer_name">Customer name (optional)</label><input id="customer_name" name="customer_name" maxlength="200" placeholder="Walk-in customer"></div><div class="field"><label for="customer_phone">Customer phone (optional)</label><input id="customer_phone" name="customer_phone" maxlength="20" placeholder="+256..."></div><div class="field"><label for="payment_method">Payment method</label><select id="payment_method" name="payment_method">{% for value,label in payment_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px"><h2 style="font:700 15px Manrope;margin:0">Items sold</h2><button type="button" class="btn btn-light" id="add-item">＋ Add item</button></div>
+<div class="item-row" style="font-size:10px;color:#78869a;font-weight:800;text-transform:uppercase"><span>Description</span><span>Quantity</span><span>Unit price (UGX)</span><span></span></div>
+<div id="items"><div class="item-row"><input name="item_description[]" aria-label="Item description" placeholder="e.g. Cooking oil" required maxlength="255"><input name="quantity[]" type="number" min="0.01" step="0.01" value="1" aria-label="Quantity" required><input name="unit_price[]" type="number" min="0" step="0.01" placeholder="0" aria-label="Unit price" required><button type="button" class="remove-row" aria-label="Remove item" disabled>×</button></div></div>
+<div class="totals"><span class="muted">Estimated total</span><span class="total-value" id="grand-total">UGX 0</span></div>
+<div style="display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #edf0f5;padding-top:20px"><a class="btn btn-light" href="{% url 'dashboard' %}">Cancel</a><button class="btn btn-primary" type="submit">Save & generate receipt →</button></div>
+</div></form>{% endblock %}
+{% block scripts %}<script>
+const items=document.getElementById('items'),total=document.getElementById('grand-total');
+function updateTotal(){let sum=0;items.querySelectorAll('.item-row').forEach(row=>{sum+=(Number(row.querySelector('[name="quantity[]"]').value)||0)*(Number(row.querySelector('[name="unit_price[]"]').value)||0)});total.textContent='UGX '+sum.toLocaleString('en-UG',{maximumFractionDigits:2})}
+function bindRow(row){row.querySelectorAll('input').forEach(el=>el.addEventListener('input',updateTotal));row.querySelector('.remove-row').addEventListener('click',()=>{if(items.children.length>1){row.remove();updateTotal()}})}
+bindRow(items.firstElementChild);
+document.getElementById('add-item').addEventListener('click',()=>{const row=items.firstElementChild.cloneNode(true);row.querySelectorAll('input').forEach(el=>el.value=el.name==='quantity[]'?'1':'');row.querySelector('.remove-row').disabled=false;items.appendChild(row);bindRow(row)});
+</script>{% endblock %}
