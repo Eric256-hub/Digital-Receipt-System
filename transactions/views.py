@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from uuid import uuid4
 
@@ -6,8 +7,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction as db_transaction
-from django.db.models import Count, Q, Sum
-from django.http import HttpResponseForbidden
+from django.db.models import F, Q, Sum
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -51,7 +52,10 @@ def login_view(request):
         user = authenticate(request, username=username, password=request.POST.get("password", ""))
         if user is not None:
             login(request, user)
-            return redirect(request.GET.get("next") or "dashboard")
+            next_url = request.POST.get("next") or request.GET.get("next", "")
+            if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+                return redirect(next_url)
+            return redirect("dashboard")
         messages.error(request, "The username or password you entered is incorrect.")
     return render(request, "transactions/login.html")
 
@@ -113,10 +117,19 @@ def transaction_list(request):
         qs = qs.filter(Q(receipt_number__icontains=query) | Q(customer__customer_name__icontains=query))
     if status in {"COMPLETED", "CANCELLED"}:
         qs = qs.filter(status=status)
-    if start:
-        qs = qs.filter(transaction_date__date__gte=start)
-    if end:
-        qs = qs.filter(transaction_date__date__lte=end)
+    try:
+        if start:
+            date.fromisoformat(start)
+            qs = qs.filter(transaction_date__date__gte=start)
+        if end:
+            date.fromisoformat(end)
+            qs = qs.filter(transaction_date__date__lte=end)
+        if start and end and date.fromisoformat(end) < date.fromisoformat(start):
+            raise ValueError
+    except ValueError:
+        messages.error(request, "Enter a valid date range.")
+        start, end = "", ""
+        qs = Transaction.objects.filter(business=membership.business).select_related("customer", "recorded_by")
     return render(request, "transactions/transaction_list.html", {
         "transactions": qs[:200], "query": query, "status": status,
         "date_from": start, "date_to": end,
@@ -141,9 +154,15 @@ def transaction_create(request):
             try:
                 quantity = Decimal(quantities[index])
                 price = Decimal(prices[index])
-                if not description or quantity <= 0 or price < 0:
+                if (
+                    not description or not quantity.is_finite() or not price.is_finite()
+                    or quantity <= 0 or quantity > Decimal("99999999.99")
+                    or price < 0 or price > Decimal("9999999999.99")
+                ):
                     raise InvalidOperation
                 line_total = (quantity * price).quantize(Decimal("0.01"))
+                if line_total > Decimal("9999999999.99"):
+                    raise InvalidOperation
                 valid_items.append((description, quantity, price, line_total))
             except (InvalidOperation, ValueError, IndexError):
                 errors.append(f"Check item row {index + 1}: enter a description, positive quantity and valid price.")
@@ -168,6 +187,9 @@ def transaction_create(request):
                 )
             receipt_number = f"DRS-{timezone.localdate():%Y%m%d}-{uuid4().hex[:8].upper()}"
             total = sum((item[3] for item in valid_items), Decimal("0.00"))
+            if total > Decimal("9999999999.99"):
+                messages.error(request, "The transaction total is above the supported limit.")
+                return render(request, "transactions/transaction_form.html", {"payment_choices": Transaction.PAYMENT_CHOICES})
             record = Transaction.objects.create(
                 business=membership.business,
                 recorded_by=request.user,
@@ -207,7 +229,7 @@ def receipt_printed(request, pk):
         return redirect("business_setup")
     record = get_object_or_404(Transaction, pk=pk, business=membership.business)
     receipt, _ = Receipt.objects.get_or_create(transaction=record)
-    Receipt.objects.filter(pk=receipt.pk).update(print_count=receipt.print_count + 1)
+    Receipt.objects.filter(pk=receipt.pk).update(print_count=F("print_count") + 1)
     return redirect("receipt_detail", pk=record.pk)
 
 
