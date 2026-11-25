@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Digital Receipt System</title>
+    <style>
+        :root {
+            --navy: #12355b;
+            --navy-dark: #0b2742;
+            --blue: #1f5d99;
+            --background: #f4f7fb;
+            --border: #dbe4ef;
+            --text: #1f2937;
+            --muted: #64748b;
+            --error: #b42318;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background:
+                linear-gradient(135deg, rgba(18, 53, 91, 0.96), rgba(31, 93, 153, 0.88)),
+                var(--navy);
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        .login-card {
+            width: min(420px, 100%);
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 20px 50px rgba(5, 30, 55, 0.28);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: #ffffff;
+            padding: 34px 36px 24px;
+            text-align: center;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .logo-mark {
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 14px;
+            border-radius: 12px;
+            background: var(--navy);
+            color: #ffffff;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--navy-dark);
+            font-size: 25px;
+        }
+
+        .subtitle {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .login-body { padding: 28px 36px 34px; }
+
+        .message {
+            margin: 0 0 18px;
+            padding: 11px 12px;
+            border-radius: 7px;
+            background: #fff1f0;
+            border: 1px solid #ffd2ce;
+            color: var(--error);
+            font-size: 14px;
+        }
+
+        .field { margin-bottom: 18px; }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            height: 46px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 13px;
+            color: var(--text);
+            background: #ffffff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(31, 93, 153, 0.12);
+        }
+
+        button {
+            width: 100%;
+            height: 48px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--navy);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover { background: var(--navy-dark); }
+
+        .academic-note {
+            margin: 22px 0 0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 16px; }
+            .login-header { padding: 28px 22px 20px; }
+            .login-body { padding: 24px 22px 28px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="login-card" aria-labelledby="login-heading">
+        <header class="login-header">
+            <div class="logo-mark" aria-hidden="true">DR</div>
+            <h1 id="login-heading">Digital Receipt System</h1>
+            <p class="subtitle">Sign in to manage your business transactions</p>
+        </header>
+
+        <section class="login-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="message" role="alert">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autocomplete="username"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit">Sign In</button>
+            </form>
+
+            <p style="margin: 18px 0 0; text-align: center; color: #64748b; font-size: 14px;">
+                New to the system?
+                <a href="{% url 'register' %}" style="color: #12355b; font-weight: 700; text-decoration: none;">Create an account</a>
+            </p>
+
+            <p class="academic-note">
+                Academic transaction-recording and receipt-generation system<br>
+                Uganda Christian University, Mbale College
+            </p>
+        </section>
+    </main>
+</body>
+</html>

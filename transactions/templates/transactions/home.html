@@ -1,0 +1,1727 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Receipt System | Smarter Business Records</title>
+    <meta name="description" content="Record business transactions, generate professional receipts and organise your transaction history with ease.">
+
+    <style>
+        :root {
+            --navy: #102542;
+            --blue: #2864e8;
+            --blue-dark: #194fc5;
+            --teal: #13a58b;
+            --ink: #172b46;
+            --muted: #66758b;
+            --light: #f4f7fc;
+            --border: #e5eaf2;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+            color: var(--ink);
+            background: var(--white);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .container {
+            width: min(1160px, calc(100% - 40px));
+            margin: auto;
+        }
+
+        /* NAVIGATION */
+
+        .navbar {
+            height: 78px;
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,.96);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -.5px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: white;
+            background: var(--navy);
+        }
+
+        .brand-icon svg {
+            width: 23px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            color: #53637a;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            min-height: 46px;
+            padding: 0 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: .2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+            box-shadow: 0 6px 15px rgba(40,100,232,.18);
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            color: var(--navy);
+            border: 1px solid var(--border);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: white;
+            border: 1px solid var(--border);
+            padding: 9px 12px;
+            border-radius: 8px;
+            color: var(--navy);
+            cursor: pointer;
+        }
+
+        /* HERO */
+
+        .hero {
+            background:
+                radial-gradient(circle at 85% 20%, rgba(40,100,232,.10), transparent 28%),
+                linear-gradient(135deg, #f7faff 0%, #ffffff 70%);
+            overflow: hidden;
+        }
+
+        .hero-content {
+            min-height: 650px;
+            display: grid;
+            grid-template-columns: 1fr 1.08fr;
+            gap: 65px;
+            align-items: center;
+            padding-top: 75px;
+            padding-bottom: 75px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 13px;
+            border-radius: 30px;
+            color: #167d6e;
+            background: #e5f7f2;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--teal);
+        }
+
+        .hero h1 {
+            max-width: 600px;
+            margin: 23px 0 20px;
+            color: var(--navy);
+            font-size: clamp(42px, 5vw, 61px);
+            line-height: 1.09;
+            letter-spacing: -2.7px;
+        }
+
+        .hero h1 span {
+            color: var(--blue);
+        }
+
+        .hero-description {
+            max-width: 530px;
+            font-size: 17px;
+            line-height: 1.8;
+            color: var(--muted);
+            margin-bottom: 29px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 13px;
+        }
+
+        .hero-buttons .btn {
+            min-height: 53px;
+            padding: 0 23px;
+        }
+
+        .hero-note {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 23px;
+            font-size: 13px;
+            color: #7b899d;
+        }
+
+        .hero-note svg {
+            color: var(--teal);
+            width: 17px;
+        }
+
+        /* DASHBOARD PREVIEW */
+
+        .preview-area {
+            position: relative;
+            padding: 10px 0 35px;
+        }
+
+        .dashboard {
+            background: white;
+            border: 1px solid #e4eaf3;
+            border-radius: 17px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(20,43,77,.15);
+            transform: perspective(1200px) rotateY(-3deg);
+        }
+
+        .browser-bar {
+            height: 47px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 17px;
+            gap: 7px;
+            background: #fcfdff;
+        }
+
+        .browser-dot {
+            height: 9px;
+            width: 9px;
+            border-radius: 50%;
+            background: #d6deea;
+        }
+
+        .browser-address {
+            margin: auto;
+            width: 42%;
+            height: 22px;
+            border-radius: 5px;
+            background: #f0f3f8;
+        }
+
+        .dashboard-body {
+            display: grid;
+            grid-template-columns: 145px 1fr;
+            min-height: 390px;
+        }
+
+        .sidebar {
+            background: #102542;
+            padding: 20px 12px;
+            color: white;
+        }
+
+        .sidebar-brand {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 8px 5px 23px;
+            letter-spacing: .3px;
+        }
+
+        .sidebar-link {
+            padding: 11px 9px;
+            margin: 5px 0;
+            font-size: 10px;
+            border-radius: 6px;
+            color: #bdc9dc;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .sidebar-link.active {
+            color: white;
+            background: #294a73;
+        }
+
+        .sidebar-symbol {
+            font-size: 13px;
+        }
+
+        .dashboard-main {
+            padding: 22px 19px;
+            background: #fbfcfe;
+        }
+
+        .dashboard-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-heading strong {
+            font-size: 14px;
+            color: var(--navy);
+        }
+
+        .mini-button {
+            background: var(--blue);
+            color: white;
+            padding: 7px 10px;
+            border-radius: 5px;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 9px;
+        }
+
+        .stat-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 9px;
+            background: white;
+        }
+
+        .stat-card small {
+            display: block;
+            color: #8290a3;
+            font-size: 8px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card strong {
+            display: block;
+            font-size: 17px;
+            color: var(--navy);
+        }
+
+        .stat-card em {
+            font-size: 8px;
+            color: var(--teal);
+            font-style: normal;
+        }
+
+        .history-card {
+            margin-top: 16px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: white;
+        }
+
+        .history-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 12px;
+        }
+
+        .history-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 5px;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid #f0f2f6;
+            font-size: 8px;
+            color: #63728a;
+        }
+
+        .history-row strong {
+            color: var(--navy);
+            font-size: 8px;
+        }
+
+        .completed {
+            background: #e6f8ef;
+            color: #158451;
+            border-radius: 20px;
+            padding: 4px 7px;
+        }
+
+        /* FLOATING RECEIPT */
+
+        .receipt-card {
+            position: absolute;
+            right: -22px;
+            bottom: 0;
+            width: 225px;
+            padding: 18px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 20px 45px rgba(20,43,77,.16);
+        }
+
+        .receipt-card h4 {
+            color: var(--navy);
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .receipt-card .receipt-subtitle {
+            text-align: center;
+            color: #8996a8;
+            font-size: 8px;
+            margin-bottom: 14px;
+        }
+
+        .receipt-detail {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 9px;
+            color: #68768b;
+            margin: 9px 0;
+        }
+
+        .receipt-total {
+            border-top: 1px dashed #d8deea;
+            margin-top: 13px;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--navy);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .receipt-thanks {
+            text-align: center;
+            margin-top: 13px;
+            font-size: 8px;
+            color: var(--teal);
+        }
+
+        /* VALUE STRIP */
+
+        .value-strip {
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: white;
+        }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            padding: 26px 0;
+            gap: 20px;
+        }
+
+        .value-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .value-icon {
+            flex: 0 0 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            background: #edf3ff;
+            color: var(--blue);
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .value-item strong {
+            display: block;
+            color: var(--navy);
+            font-size: 13px;
+        }
+
+        .value-item span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* GENERAL SECTIONS */
+
+        .section {
+            padding: 95px 0;
+        }
+
+        .section-light {
+            background: var(--light);
+        }
+
+        .section-heading {
+            max-width: 690px;
+            margin-bottom: 43px;
+        }
+
+        .section-heading.center {
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-label {
+            color: var(--blue);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(30px,4vw,43px);
+            line-height: 1.18;
+            letter-spacing: -1.5px;
+            color: var(--navy);
+            margin: 13px 0;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* FEATURES */
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 19px;
+        }
+
+        .feature-card {
+            padding: 27px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: white;
+            transition: .25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(20,43,77,.07);
+            border-color: #cbd9f4;
+        }
+
+        .feature-icon {
+            width: 49px;
+            height: 49px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: var(--blue);
+            background: #edf3ff;
+        }
+
+        .feature-icon svg {
+            width: 23px;
+            height: 23px;
+        }
+
+        .feature-card h3 {
+            color: var(--navy);
+            margin: 19px 0 9px;
+            font-size: 17px;
+        }
+
+        .feature-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* SHOWCASE */
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .showcase-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .showcase-copy {
+            padding: 25px 25px 10px;
+        }
+
+        .showcase-copy h3 {
+            font-size: 19px;
+            color: var(--navy);
+        }
+
+        .showcase-copy p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .showcase-screen {
+            margin: 20px 25px 25px;
+            padding: 17px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: #f8faff;
+        }
+
+        .fake-input {
+            height: 34px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 11px;
+        }
+
+        .fake-table-head,
+        .fake-table-row {
+            display: grid;
+            grid-template-columns: 1.5fr .6fr .9fr;
+            gap: 8px;
+            padding: 10px 7px;
+            font-size: 9px;
+            border-bottom: 1px solid #e8edf4;
+            color: #627189;
+        }
+
+        .fake-table-head {
+            font-weight: 800;
+            color: var(--navy);
+            background: #edf3ff;
+        }
+
+        .fake-table-row strong {
+            color: var(--navy);
+        }
+
+        /* STEPS */
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 30px;
+        }
+
+        .step {
+            padding: 27px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: white;
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            background: var(--navy);
+            color: white;
+            border-radius: 13px;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .step h3 {
+            color: var(--navy);
+            margin: 19px 0 8px;
+            font-size: 17px;
+        }
+
+        .step p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* BENEFITS */
+
+        .benefits-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 65px;
+            align-items: center;
+        }
+
+        .benefits-layout h2 {
+            color: var(--navy);
+            font-size: clamp(30px,4vw,42px);
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin: 14px 0;
+        }
+
+        .benefits-layout p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 23px;
+        }
+
+        .benefit-list {
+            display: grid;
+            gap: 13px;
+        }
+
+        .benefit {
+            display: flex;
+            gap: 13px;
+            align-items: flex-start;
+            padding: 17px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .check {
+            flex: 0 0 25px;
+            height: 25px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #e2f7ee;
+            color: #159565;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .benefit strong {
+            display: block;
+            color: var(--navy);
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .benefit span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* CTA */
+
+        .cta-section {
+            padding: 0 0 90px;
+        }
+
+        .cta-box {
+            position: relative;
+            overflow: hidden;
+            border-radius: 17px;
+            padding: 58px;
+            background: linear-gradient(115deg, #102542, #1d4779);
+            color: white;
+        }
+
+        .cta-box::after {
+            content: "";
+            position: absolute;
+            width: 310px;
+            height: 310px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 50%;
+            right: -70px;
+            top: -140px;
+            box-shadow: 0 0 0 35px rgba(255,255,255,.04),
+                        0 0 0 70px rgba(255,255,255,.025);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 650px;
+        }
+
+        .cta-box h2 {
+            font-size: clamp(28px,4vw,39px);
+            line-height: 1.2;
+            margin-bottom: 13px;
+        }
+
+        .cta-box p {
+            color: #c8d6e9;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .cta-box .btn {
+            background: white;
+            color: var(--navy);
+        }
+
+        /* FOOTER */
+
+        footer {
+            border-top: 1px solid var(--border);
+            background: white;
+        }
+
+        .footer-grid {
+            padding: 55px 0 40px;
+            display: grid;
+            grid-template-columns: 1.7fr 1fr 1fr 1fr;
+            gap: 35px;
+        }
+
+        .footer-description {
+            max-width: 290px;
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 15px;
+            line-height: 1.8;
+        }
+
+        .footer-column h4 {
+            color: var(--navy);
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .footer-column a {
+            display: block;
+            color: var(--muted);
+            font-size: 13px;
+            margin: 10px 0;
+        }
+
+        .footer-column a:hover {
+            color: var(--blue);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding: 21px 0;
+            color: #8793a5;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 950px) {
+            .nav-links {
+                gap: 16px;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .hero-text {
+                max-width: 700px;
+            }
+
+            .preview-area {
+                max-width: 680px;
+            }
+
+            .value-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+        }
+
+        @media(max-width: 700px) {
+            .navbar {
+                height: 68px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 68px;
+                left: 15px;
+                right: 15px;
+                padding: 15px;
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                box-shadow: 0 15px 30px rgba(20,43,77,.1);
+            }
+
+            .nav-links.open {
+                display: grid;
+            }
+
+            .nav-links a {
+                padding: 9px;
+            }
+
+            .nav-actions {
+                display: none;
+            }
+
+            .hero-content {
+                padding-top: 55px;
+                padding-bottom: 65px;
+            }
+
+            .hero h1 {
+                font-size: 43px;
+                letter-spacing: -1.8px;
+            }
+
+            .hero-description {
+                font-size: 15px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+            }
+
+            .dashboard-body {
+                grid-template-columns: 85px 1fr;
+            }
+
+            .sidebar {
+                padding: 15px 7px;
+            }
+
+            .sidebar-brand {
+                font-size: 9px;
+                padding: 8px 2px 15px;
+            }
+
+            .sidebar-link {
+                font-size: 8px;
+                padding: 9px 4px;
+                gap: 4px;
+            }
+
+            .dashboard-main {
+                padding: 13px 9px;
+            }
+
+            .dashboard-heading strong {
+                font-size: 10px;
+            }
+
+            .mini-button {
+                font-size: 7px;
+            }
+
+            .stats {
+                gap: 5px;
+            }
+
+            .stat-card {
+                padding: 9px 5px;
+            }
+
+            .stat-card small {
+                font-size: 7px;
+            }
+
+            .stat-card strong {
+                font-size: 13px;
+            }
+
+            .history-card {
+                padding: 8px;
+            }
+
+            .history-row {
+                font-size: 7px;
+                gap: 2px;
+            }
+
+            .receipt-card {
+                width: 175px;
+                right: -3px;
+                padding: 12px;
+            }
+
+            .value-grid {
+                gap: 17px 10px;
+            }
+
+            .value-item {
+                align-items: flex-start;
+            }
+
+            .value-item span {
+                font-size: 10px;
+            }
+
+            .section {
+                padding: 70px 0;
+            }
+
+            .feature-grid,
+            .steps,
+            .showcase-grid,
+            .benefits-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-layout {
+                gap: 30px;
+            }
+
+            .cta-section {
+                padding-bottom: 65px;
+            }
+
+            .cta-box {
+                padding: 36px 25px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px 20px;
+            }
+
+            .footer-brand {
+                grid-column: 1/-1;
+            }
+        }
+
+        @media(max-width: 390px) {
+            .container {
+                width: calc(100% - 28px);
+            }
+
+            .brand {
+                font-size: 15px;
+            }
+
+            .brand-icon {
+                width: 37px;
+                height: 37px;
+            }
+
+            .hero h1 {
+                font-size: 37px;
+            }
+
+            .dashboard-body {
+                grid-template-columns: 70px 1fr;
+            }
+
+            .receipt-card {
+                width: 155px;
+            }
+
+            .value-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-brand {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="container nav-content">
+
+        <a href="{% url 'home' %}" class="brand">
+            <span class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2Z"/>
+                    <path d="M9 7h6M9 11h6M9 15h4"/>
+                </svg>
+            </span>
+            Digital Receipt System
+        </a>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="#features">Features</a>
+            <a href="#showcase">Preview</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#about">About</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-primary">Create Account</a>
+        </div>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Open navigation menu" aria-expanded="false">
+            ☰
+        </button>
+
+    </div>
+</header>
+
+<main>
+
+    <!-- HERO SECTION -->
+
+    <section class="hero">
+        <div class="container hero-content">
+
+            <div class="hero-text">
+
+                <div class="eyebrow">
+                    <span class="eyebrow-dot"></span>
+                    A smarter way to manage transactions
+                </div>
+
+                <h1>
+                    Your Business Transactions,
+                    <span>Organised.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Replace scattered paper records with a simple digital
+                    workspace. Record customer transactions, generate
+                    professional receipts and retrieve past records with ease.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="{% url 'register' %}" class="btn btn-primary">
+                        Get Started Free →
+                    </a>
+
+                    <a href="#features" class="btn btn-outline">
+                        Explore Features
+                    </a>
+                </div>
+
+                <div class="hero-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    Simple registration · Organised records · Easy receipt printing
+                </div>
+
+            </div>
+
+            <!-- PRODUCT PREVIEW -->
+
+            <div class="preview-area">
+
+                <div class="dashboard">
+
+                    <div class="browser-bar">
+                        <span class="browser-dot"></span>
+                        <span class="browser-dot"></span>
+                        <span class="browser-dot"></span>
+                        <div class="browser-address"></div>
+                    </div>
+
+                    <div class="dashboard-body">
+
+                        <aside class="sidebar">
+                            <div class="sidebar-brand">BUSINESS APP</div>
+                            <div class="sidebar-link active"><span class="sidebar-symbol">▦</span> Dashboard</div>
+                            <div class="sidebar-link"><span class="sidebar-symbol">＋</span> New sale</div>
+                            <div class="sidebar-link"><span class="sidebar-symbol">▤</span> Transactions</div>
+                            <div class="sidebar-link"><span class="sidebar-symbol">▣</span> Receipts</div>
+                            <div class="sidebar-link"><span class="sidebar-symbol">⚙</span> Business</div>
+                        </aside>
+
+                        <div class="dashboard-main">
+
+                            <div class="dashboard-heading">
+                                <strong>Business overview</strong>
+                                <span class="mini-button">+ New transaction</span>
+                            </div>
+
+                            <div class="stats">
+
+                                <div class="stat-card">
+                                    <small>Total Transactions</small>
+                                    <strong>128</strong>
+                                    <em>Sample data</em>
+                                </div>
+
+                                <div class="stat-card">
+                                    <small>Completed</small>
+                                    <strong>121</strong>
+                                    <em>Sample data</em>
+                                </div>
+
+                                <div class="stat-card">
+                                    <small>Receipts</small>
+                                    <strong>121</strong>
+                                    <em>Sample data</em>
+                                </div>
+
+                            </div>
+
+                            <div class="history-card">
+                                <div class="history-title">Recent Transactions</div>
+
+                                <div class="history-row">
+                                    <strong>RC-0128</strong>
+                                    <span>UGX 430,000</span>
+                                    <span class="completed">Completed</span>
+                                </div>
+
+                                <div class="history-row">
+                                    <strong>RC-0127</strong>
+                                    <span>UGX 125,000</span>
+                                    <span class="completed">Completed</span>
+                                </div>
+
+                                <div class="history-row">
+                                    <strong>RC-0126</strong>
+                                    <span>UGX 78,000</span>
+                                    <span class="completed">Completed</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="receipt-card">
+                    <h4>BUSINESS RECEIPT</h4>
+                    <div class="receipt-subtitle">Illustrative receipt preview</div>
+
+                    <div class="receipt-detail">
+                        <span>Receipt No.</span>
+                        <strong>RC-0128</strong>
+                    </div>
+
+                    <div class="receipt-detail">
+                        <span>Office chair × 2</span>
+                        <span>360,000</span>
+                    </div>
+
+                    <div class="receipt-detail">
+                        <span>Desk lamp × 1</span>
+                        <span>45,000</span>
+                    </div>
+
+                    <div class="receipt-detail">
+                        <span>Notebooks × 5</span>
+                        <span>25,000</span>
+                    </div>
+
+                    <div class="receipt-total">
+                        <span>Total</span>
+                        <span>UGX 430,000</span>
+                    </div>
+
+                    <div class="receipt-thanks">Thank you for your business!</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- VALUE STRIP -->
+
+    <section class="value-strip">
+        <div class="container value-grid">
+
+            <div class="value-item">
+                <div class="value-icon">↗</div>
+                <div>
+                    <strong>Easy Recording</strong>
+                    <span>Record transactions clearly.</span>
+                </div>
+            </div>
+
+            <div class="value-item">
+                <div class="value-icon">▤</div>
+                <div>
+                    <strong>Digital Receipts</strong>
+                    <span>Generate organised receipts.</span>
+                </div>
+            </div>
+
+            <div class="value-item">
+                <div class="value-icon">⌕</div>
+                <div>
+                    <strong>Quick Retrieval</strong>
+                    <span>Find previous transactions.</span>
+                </div>
+            </div>
+
+            <div class="value-item">
+                <div class="value-icon">✓</div>
+                <div>
+                    <strong>Better Records</strong>
+                    <span>Keep transaction history.</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+
+    <section class="section" id="features">
+        <div class="container">
+
+            <div class="section-heading center">
+                <div class="section-label">What the system offers</div>
+                <h2>Everything you need to manage your receipts.</h2>
+                <p>
+                    A focused set of tools designed to make transaction
+                    recording and receipt management easier for small businesses.
+                </p>
+            </div>
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2Z"/>
+                            <path d="M9 7h6M9 11h6M9 15h4"/>
+                        </svg>
+                    </div>
+                    <h3>Digital Receipt Generation</h3>
+                    <p>Create organised receipts with unique reference numbers for completed transactions.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="3" y="3" width="18" height="18" rx="3"/>
+                            <path d="M8 8h8M8 12h8M8 16h5"/>
+                        </svg>
+                    </div>
+                    <h3>Transaction Recording</h3>
+                    <p>Record customer details, multiple items, quantities and prices in one transaction.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 7v10M8 12h8"/>
+                        </svg>
+                    </div>
+                    <h3>Automatic Calculations</h3>
+                    <p>Calculate individual item totals and the overall transaction amount.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                            <rect x="6" y="14" width="12" height="8"/>
+                        </svg>
+                    </div>
+                    <h3>Receipt Printing</h3>
+                    <p>Open a receipt preview and print it or save it as a PDF using your browser.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="11" cy="11" r="7"/>
+                            <path d="m20 20-4-4"/>
+                        </svg>
+                    </div>
+                    <h3>Transaction History</h3>
+                    <p>Search and retrieve earlier transaction records using receipt details.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="3" y="5" width="18" height="16" rx="2"/>
+                            <path d="M8 5V3h8v2M7 10h10M7 14h6"/>
+                        </svg>
+                    </div>
+                    <h3>Business Management</h3>
+                    <p>Set up your business profile and manage authorised access to its records.</p>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- APPLICATION SHOWCASE -->
+
+    <section class="section section-light" id="showcase">
+        <div class="container">
+
+            <div class="section-heading">
+                <div class="section-label">Inside the system</div>
+                <h2>A simple workflow for everyday business transactions.</h2>
+                <p>
+                    The system is designed around two important tasks:
+                    recording a transaction and keeping its receipt accessible.
+                </p>
+            </div>
+
+            <div class="showcase-grid">
+
+                <article class="showcase-card">
+                    <div class="showcase-copy">
+                        <h3>Record a transaction</h3>
+                        <p>Enter customer information and add the items being purchased.</p>
+                    </div>
+
+                    <div class="showcase-screen">
+                        <div class="fake-input"></div>
+                        <div class="fake-input"></div>
+
+                        <div class="fake-table-head">
+                            <span>Item</span>
+                            <span>Qty</span>
+                            <span>Amount</span>
+                        </div>
+
+                        <div class="fake-table-row">
+                            <strong>Office chair</strong>
+                            <span>2</span>
+                            <span>360,000</span>
+                        </div>
+
+                        <div class="fake-table-row">
+                            <strong>Desk lamp</strong>
+                            <span>1</span>
+                            <span>45,000</span>
+                        </div>
+
+                        <div class="fake-table-row">
+                            <strong>Notebooks</strong>
+                            <span>5</span>
+                            <span>25,000</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="showcase-card">
+                    <div class="showcase-copy">
+                        <h3>Keep records accessible</h3>
+                        <p>Review transaction references, amounts and completion status.</p>
+                    </div>
+
+                    <div class="showcase-screen">
+
+                        <div class="fake-input"></div>
+
+                        <div class="fake-table-head">
+                            <span>Receipt No.</span>
+                            <span>Amount</span>
+                            <span>Status</span>
+                        </div>
+
+                        <div class="fake-table-row">
+                            <strong>RC-0128</strong>
+                            <span>430,000</span>
+                            <span>Done</span>
+                        </div>
+
+                        <div class="fake-table-row">
+                            <strong>RC-0127</strong>
+                            <span>125,000</span>
+                            <span>Done</span>
+                        </div>
+
+                        <div class="fake-table-row">
+                            <strong>RC-0126</strong>
+                            <span>78,000</span>
+                            <span>Done</span>
+                        </div>
+
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+
+    <section class="section" id="how-it-works">
+        <div class="container">
+
+            <div class="section-heading center">
+                <div class="section-label">Getting started</div>
+                <h2>Start managing transactions in three steps.</h2>
+                <p>A straightforward process from registration to receipt generation.</p>
+            </div>
+
+            <div class="steps">
+
+                <article class="step">
+                    <div class="step-number">01</div>
+                    <h3>Create an account</h3>
+                    <p>Register with your account details to access your business workspace.</p>
+                </article>
+
+                <article class="step">
+                    <div class="step-number">02</div>
+                    <h3>Set up your business</h3>
+                    <p>Provide your business name, contact information and receipt footer.</p>
+                </article>
+
+                <article class="step">
+                    <div class="step-number">03</div>
+                    <h3>Record and generate</h3>
+                    <p>Enter transactions, review the totals and generate customer receipts.</p>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT AND BENEFITS -->
+
+    <section class="section section-light" id="about">
+        <div class="container benefits-layout">
+
+            <div>
+                <div class="section-label">Why use the system?</div>
+
+                <h2>Move beyond scattered paperwork and disorganised records.</h2>
+
+                <p>
+                    Keeping transaction information in notebooks and loose
+                    papers can make it difficult to retrieve old records.
+                    A digital system provides a structured way to record
+                    transactions and manage customer receipts.
+                </p>
+
+                <a href="{% url 'register' %}" class="btn btn-primary">
+                    Create Your Account →
+                </a>
+            </div>
+
+            <div class="benefit-list">
+
+                <div class="benefit">
+                    <div class="check">✓</div>
+                    <div>
+                        <strong>Organised transaction information</strong>
+                        <span>Keep transaction details together in a structured record.</span>
+                    </div>
+                </div>
+
+                <div class="benefit">
+                    <div class="check">✓</div>
+                    <div>
+                        <strong>Clear customer receipts</strong>
+                        <span>Provide customers with consistent transaction documents.</span>
+                    </div>
+                </div>
+
+                <div class="benefit">
+                    <div class="check">✓</div>
+                    <div>
+                        <strong>Easier record retrieval</strong>
+                        <span>Search for earlier transactions instead of sorting through notebooks.</span>
+                    </div>
+                </div>
+
+                <div class="benefit">
+                    <div class="check">✓</div>
+                    <div>
+                        <strong>Accountable cancellation records</strong>
+                        <span>Retain cancelled transactions together with their recorded reasons.</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+
+    <section class="cta-section">
+        <div class="container">
+
+            <div class="cta-box">
+                <div class="cta-content">
+                    <h2>Give your business a better way to manage receipts.</h2>
+
+                    <p>
+                        Create an account and start organising your
+                        business transactions in one digital workspace.
+                    </p>
+
+                    <a href="{% url 'register' %}" class="btn">
+                        Get Started Today →
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+
+<footer>
+    <div class="container footer-grid">
+
+        <div>
+            <a href="{% url 'home' %}" class="brand">
+                <span class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2Z"/>
+                        <path d="M9 7h6M9 11h6M9 15h4"/>
+                    </svg>
+                </span>
+                Digital Receipt System
+            </a>
+
+            <p class="footer-description">
+                A digital transaction-recording and receipt-management
+                system designed for small-scale businesses.
+            </p>
+        </div>
+
+        <div class="footer-column">
+            <h4>Explore</h4>
+            <a href="#features">Features</a>
+            <a href="#showcase">Application Preview</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#about">About</a>
+        </div>
+
+        <div class="footer-column">
+            <h4>Account</h4>
+            <a href="{% url 'register' %}">Create Account</a>
+            <a href="{% url 'login' %}">Login</a>
+        </div>
+
+        <div class="footer-column">
+            <h4>Project</h4>
+            <a href="#about">About the System</a>
+            <a href="#features">System Features</a>
+        </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+        <span>© 2026 Digital Receipt System. All rights reserved.</span>
+        <span>Academic project. Not an official URA or EFRIS system.</span>
+    </div>
+</footer>
+
+<script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    menuToggle.addEventListener("click", function () {
+        const isOpen = navLinks.classList.toggle("open");
+        menuToggle.setAttribute("aria-expanded", isOpen);
+        menuToggle.textContent = isOpen ? "✕" : "☰";
+    });
+
+    navLinks.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+            navLinks.classList.remove("open");
+            menuToggle.setAttribute("aria-expanded", "false");
+            menuToggle.textContent = "☰";
+        });
+    });
+</script>
+
+</body>
+</html>

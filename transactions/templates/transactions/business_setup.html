@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Setup | Digital Receipt System</title>
+    <style>
+        :root {
+            --navy: #12355b;
+            --navy-dark: #0b2742;
+            --background: #f4f7fb;
+            --border: #dbe4ef;
+            --text: #1f2937;
+            --muted: #64748b;
+            --error: #b42318;
+            --success: #166534;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background: var(--background);
+        }
+
+        header {
+            background: var(--navy);
+            color: #ffffff;
+            padding: 18px 30px;
+        }
+
+        header strong { font-size: 18px; }
+
+        main {
+            width: min(760px, calc(100% - 32px));
+            margin: 38px auto;
+        }
+
+        .setup-card {
+            background: #ffffff;
+            border: 1px solid #e6edf5;
+            border-radius: 12px;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            color: var(--navy-dark);
+            font-size: 24px;
+        }
+
+        .card-header p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        form { padding: 26px 28px 30px; }
+
+        .message {
+            margin: 0 0 18px;
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .message.error {
+            background: #fff1f0;
+            border: 1px solid #ffd2ce;
+            color: var(--error);
+        }
+
+        .message.success {
+            background: #ecfdf3;
+            border: 1px solid #bbf7d0;
+            color: var(--success);
+        }
+
+        .field { margin-bottom: 18px; }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        input, textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 13px;
+            color: var(--text);
+            background: #ffffff;
+            font: inherit;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #1f5d99;
+            box-shadow: 0 0 0 3px rgba(31, 93, 153, 0.12);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 8px;
+            background: var(--navy);
+            color: #ffffff;
+            padding: 13px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover { background: var(--navy-dark); }
+
+        @media (max-width: 600px) {
+            header { padding: 16px 20px; }
+            main { width: min(100% - 24px, 760px); margin: 20px auto; }
+            .card-header { padding: 20px; }
+            form { padding: 22px 20px 24px; }
+            .actions button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <strong>Digital Receipt System</strong>
+    </header>
+
+    <main>
+        <section class="setup-card">
+            <div class="card-header">
+                <h1>Configure Your Business</h1>
+                <p>Enter the details that will appear on generated receipts.</p>
+            </div>
+
+            <form method="post" action="{% url 'business_setup' %}">
+                {% csrf_token %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="message {% if message.tags %}{{ message.tags }}{% endif %}" role="alert">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="field">
+                    <label for="business_name">Business name *</label>
+                    <input id="business_name" name="business_name" type="text" maxlength="200" required autofocus>
+                </div>
+
+                <div class="field">
+                    <label for="address">Business address</label>
+                    <input id="address" name="address" type="text" maxlength="255">
+                </div>
+
+                <div class="field">
+                    <label for="phone">Business telephone number</label>
+                    <input id="phone" name="phone" type="tel" maxlength="20">
+                </div>
+
+                <div class="field">
+                    <label for="receipt_footer">Receipt footer message</label>
+                    <textarea id="receipt_footer" name="receipt_footer" maxlength="255" placeholder="Thank you for your business."></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">Save Business Details</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
