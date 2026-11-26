@@ -1,4 +1,3 @@
-
 import os
 
 from django.contrib.auth import get_user_model
@@ -6,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
-    help = "Create the initial production administrator."
+    help = "Create or repair the production administrator."
 
     def handle(self, *args, **options):
         username = os.getenv("DJANGO_SUPERUSER_USERNAME")
@@ -20,18 +19,25 @@ class Command(BaseCommand):
 
         User = get_user_model()
 
-        if User.objects.filter(username=username).exists():
-            self.stdout.write(
-                self.style.WARNING("Administrator already exists. No changes made.")
-            )
-            return
-
-        User.objects.create_superuser(
+        user, created = User.objects.get_or_create(
             username=username,
-            email=email,
-            password=password,
+            defaults={"email": email},
         )
 
-        self.stdout.write(
-            self.style.SUCCESS("Production administrator created successfully.")
-        )
+        user.email = email
+        user.is_staff = True
+        user.is_superuser = True
+        user.is_active = True
+        user.set_password(password)
+        user.save()
+
+        if created:
+            self.stdout.write(
+                self.style.SUCCESS("Production administrator created successfully.")
+            )
+        else:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "Production administrator permissions and password updated."
+                )
+            )
