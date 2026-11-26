@@ -47,17 +47,17 @@ def register_view(request):
 def login_view(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
+    next_url = request.POST.get("next") or request.GET.get("next", "")
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
         user = authenticate(request, username=username, password=request.POST.get("password", ""))
         if user is not None:
             login(request, user)
-            next_url = request.POST.get("next") or request.GET.get("next", "")
             if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
                 return redirect(next_url)
             return redirect("dashboard")
         messages.error(request, "The username or password you entered is incorrect.")
-    return render(request, "transactions/login.html")
+    return render(request, "transactions/login.html", {"next": next_url})
 
 
 @login_required(login_url="login")
@@ -255,7 +255,7 @@ def transaction_cancel(request, pk):
     return redirect("receipt_detail", pk=record.pk)
 
 
+@require_POST
 def logout_view(request):
-    if request.method == "POST":
-        logout(request)
-    return redirect("home")
+    logout(request)
+    return redirect("login")

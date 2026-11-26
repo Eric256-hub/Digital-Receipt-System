@@ -1,37 +1,550 @@
-{% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#102a43">
-<title>{% block title %}Digital Receipt System{% endblock %}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#172b4d;--navy:#102a43;--blue:#2463eb;--muted:#66758a;--line:#e6ebf2;--bg:#f5f7fb;--white:#fff;--green:#16845b;--red:#c43d4b;--shadow:0 8px 30px rgba(20,42,70,.06)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px 'DM Sans',sans-serif}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}.shell{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:248px;background:var(--navy);color:#d8e4f2;padding:25px 18px;display:flex;flex-direction:column;z-index:10}.brand{display:flex;gap:12px;align-items:center;padding:3px 10px 30px;color:white}.brand-mark{width:38px;height:38px;border-radius:11px;background:#2e70ef;display:grid;place-items:center;font-weight:800;font-family:Manrope}.brand strong{display:block;font:800 14px Manrope}.brand small{color:#9db1c9;font-size:11px}.nav-label{padding:14px 12px 8px;color:#829ab5;text-transform:uppercase;letter-spacing:1.2px;font-size:10px;font-weight:700}.nav-link{display:flex;gap:12px;align-items:center;padding:12px;border-radius:9px;color:#c7d5e6;margin:2px 0;font-weight:600}.nav-link:hover,.nav-link.active{background:#1d4265;color:white}.nav-icon{width:20px;text-align:center;font-size:16px}.side-bottom{margin-top:auto;border-top:1px solid #2a4968;padding-top:17px}.user-chip{display:flex;align-items:center;gap:10px;padding:10px}.avatar{width:34px;height:34px;border-radius:50%;background:#dce9ff;color:#174b9a;display:grid;place-items:center;font-weight:800}.user-chip strong{display:block;color:white;font-size:12px}.user-chip small{color:#9db1c9}.main{margin-left:248px;min-height:100vh}.topbar{height:70px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px}.topbar .crumb{color:var(--muted);font-size:13px}.topbar .crumb strong{color:var(--ink)}.top-actions{display:flex;align-items:center;gap:14px}.content{max-width:1440px;margin:auto;padding:34px}.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:26px}.eyebrow{color:var(--blue);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.3px}.page-head h1{font:800 27px Manrope;margin:7px 0 6px;letter-spacing:-.8px}.subtext{color:var(--muted);margin:0;line-height:1.6}.btn{border:0;border-radius:9px;padding:11px 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;cursor:pointer;transition:.18s}.btn-primary{background:var(--blue);color:white;box-shadow:0 5px 12px #2463eb2a}.btn-primary:hover{background:#174fc8;transform:translateY(-1px)}.btn-light{background:white;border:1px solid var(--line);color:var(--ink)}.btn-danger{background:#fff0f1;color:var(--red);border:1px solid #f6d5d8}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}.stat,.panel{background:white;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.stat{padding:20px}.stat-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px;font-weight:600}.stat-icon{width:34px;height:34px;border-radius:10px;background:#edf3ff;color:var(--blue);display:grid;place-items:center;font-size:16px}.stat-value{font:800 25px Manrope;margin:13px 0 4px;letter-spacing:-.6px}.stat-note{font-size:11px;color:var(--muted)}.panel{overflow:hidden}.panel-head{padding:19px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-head h2{font:700 15px Manrope;margin:0}.panel-body{padding:22px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;padding:12px 18px;background:#fafbfd;color:#78869a;font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:800}td{padding:15px 18px;border-top:1px solid #edf0f5;font-size:12px}tbody tr:hover{background:#fafcff}.muted{color:var(--muted)}.amount{font-weight:800;font-variant-numeric:tabular-nums}.status{display:inline-flex;padding:5px 9px;border-radius:20px;font-size:10px;font-weight:800}.status-completed{background:#e8f7f0;color:#16744e}.status-cancelled{background:#fff0f1;color:#b33343}.empty{padding:42px 20px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--ink);font:700 15px Manrope;margin-bottom:7px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:700;color:#45566f}.field input,.field select,.field textarea,.filter-control{border:1px solid #dce3ed;border-radius:8px;padding:11px 12px;background:white;color:var(--ink);outline:none;min-width:0}.field input:focus,.field select:focus,.field textarea:focus,.filter-control:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2463eb18}.field textarea{min-height:80px;resize:vertical}.item-row{display:grid;grid-template-columns:minmax(180px,1fr) 110px 150px 38px;gap:10px;margin-bottom:10px;align-items:center}.item-row input{width:100%;border:1px solid #dce3ed;border-radius:8px;padding:11px}.remove-row{border:0;background:#fff0f1;color:var(--red);border-radius:8px;height:38px;cursor:pointer}.totals{display:flex;justify-content:flex-end;gap:20px;align-items:center;padding:16px 0;font-weight:700}.total-value{font:800 24px Manrope}.filters{display:flex;gap:10px;flex-wrap:wrap;padding:18px}.filters input,.filters select{border:1px solid var(--line);border-radius:8px;padding:10px;background:white}.receipt{max-width:760px;margin:0 auto;background:white;border:1px solid var(--line);border-radius:14px;padding:34px;box-shadow:var(--shadow)}.receipt-brand{text-align:center;border-bottom:1px dashed #cbd5e1;padding-bottom:22px}.receipt-brand h2{font:800 23px Manrope;margin:0 0 8px}.receipt-meta{display:flex;justify-content:space-between;gap:20px;padding:18px 0;color:var(--muted);font-size:12px}.receipt-total{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px;font:800 20px Manrope}.message{padding:12px 15px;border-radius:9px;margin-bottom:10px;background:#edf4ff;color:#2455a0}.message.error{background:#fff0f1;color:#b33343}.message.success{background:#e8f7f0;color:#16744e}.mobile-toggle{display:none}
-@media(max-width:1050px){.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.sidebar{width:74px;padding:20px 10px}.brand{padding:3px 8px 25px}.brand-copy,.nav-label,.nav-link span:last-child,.user-copy{display:none}.nav-link{justify-content:center;padding:13px}.nav-icon{font-size:18px}.user-chip{justify-content:center;padding:8px 0}.main{margin-left:74px}.content{padding:22px 16px}.topbar{padding:0 18px}.page-head{flex-direction:column}.stats{gap:10px}.stat{padding:15px}.stat-value{font-size:21px}.item-row{grid-template-columns:1fr 1fr}.item-row input:first-child{grid-column:1/-1}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}@media(max-width:430px){.stats{grid-template-columns:1fr 1fr}.receipt{padding:18px}.receipt-meta{flex-direction:column}}
-@media print{body{background:white}.sidebar,.topbar,.no-print,.messages{display:none!important}.main{margin:0}.content{padding:0;max-width:none}.receipt{box-shadow:none;border:0;border-radius:0;max-width:none;padding:0}.shell{min-height:0}}
-</style>
-{% block extra_head %}{% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Digital Receipt System{% endblock %}</title>
+    <meta name="theme-color" content="#142a43">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --navy: #142a43; --navy-2: #1a3858; --blue: #2563eb;
+            --ink: #172033; --muted: #718096; --border: #e7ecf3;
+            --surface: #ffffff; --canvas: #f4f7fb; --teal: #0f9d8a;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: "DM Sans", sans-serif; color: var(--ink); background: var(--canvas); -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; }
+        button, input, select, textarea { font: inherit; }
+        .app-shell { min-height: 100vh; }
+        .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 50; width: 254px; display: flex; flex-direction: column; padding: 22px 16px 16px; background: #142a43; color: #dce6f2; box-shadow: 12px 0 36px rgba(20,42,67,.06); }
+        .sidebar .brand { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 8px 16px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+        .sidebar .brand-icon { width: 42px; height: 42px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 12px; background: linear-gradient(145deg,#3478cb,#1c57a1); color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.16); }
+        .brand-name { font-family: Manrope, sans-serif; color: #fff; font-size: 17px; font-weight: 800; line-height: 1.1; }
+        .brand-subtitle { margin-top: 5px; color: #91a6bf; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+        .nav-section { margin-top: 11px; }
+        .nav-heading { padding: 12px 12px 7px; color: #7e96b1; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+        .nav-link { position: relative; display: flex; align-items: center; gap: 12px; min-height: 46px; margin: 3px 0; padding: 0 12px; border-radius: 9px; color: #b8c7d8; font-size: 13px; font-weight: 650; transition: .18s ease; }
+        .nav-link i { width: 18px; text-align: center; color: #93a8bf; }
+        .nav-link:hover { background: rgba(255,255,255,.07); color: #fff; }
+        .nav-link.active { background: linear-gradient(90deg, rgba(71,136,204,.28), rgba(71,136,204,.12)); color: #fff; }
+        .nav-link.active::before { content:""; position:absolute; left:-16px; width:3px; height:26px; border-radius:0 4px 4px 0; background:#62a3e6; }
+        .nav-link.active i { color:#78b5ed; }
+        .sidebar-bottom { margin-top: auto; }
+        .logout-form { margin: 0; }
+        .logout-button { width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; }
+        .user-card { display:flex; align-items:center; gap:10px; padding:12px 9px 5px; border-top:1px solid rgba(255,255,255,.08); }
+        .user-avatar, .topbar-avatar { display:grid; place-items:center; border-radius:50%; font-weight:800; }
+        .user-avatar { width:38px; height:38px; background:#2b4b6b; color:#fff; font-size:13px; }
+        .user-name { max-width:150px; color:#fff; font-size:12px; font-weight:750; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .user-role { margin-top:2px; color:#91a6bf; font-size:10px; }
+        .sidebar-overlay { display:none; }
+        .main-area { min-height:100vh; margin-left:254px; }
+        .topbar { position:sticky; top:0; z-index:40; height:68px; display:flex; align-items:center; justify-content:space-between; padding:0 34px; background:rgba(255,255,255,.94); border-bottom:1px solid var(--border); backdrop-filter:blur(14px); }
+        .topbar-left, .topbar-right, .topbar-user { display:flex; align-items:center; }
+        .topbar-left { gap:12px; }
+        .topbar-right { gap:15px; }
+        .topbar-user { gap:9px; color:#344054; font-size:12px; font-weight:700; }
+        .topbar-avatar { width:34px; height:34px; background:#edf3fb; color:#2f5d8a; font-size:11px; }
+        .date-display { color:#7c899a; font-size:11px; }
+        .topbar-divider { width:1px; height:25px; background:var(--border); }
+        .breadcrumb { color:#8a96a6; font-size:12px; }
+        .breadcrumb strong { color:#344054; }
+        .menu-toggle { display:none; width:38px; height:38px; border:1px solid var(--border); border-radius:8px; background:#fff; color:#344054; cursor:pointer; }
+        .page-content { max-width:1500px; margin:auto; padding:32px 34px 48px; }
+        .btn { min-height:42px; display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:0 16px; border:0; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; transition:.16s ease; }
+        .btn-primary { background:#2563eb; color:#fff; box-shadow:0 7px 16px rgba(37,99,235,.16); }
+        .btn-primary:hover { background:#1d4ed8; transform:translateY(-1px); }
+        .btn-light { background:#f4f6f9; color:#526174; border:1px solid #e7ebf1; }
+        .btn-light:hover { background:#edf1f6; }
+        .panel { background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px rgba(31,45,61,.025); }
+        .messages { display:grid; gap:8px; margin-bottom:18px; }
+        .message { padding:12px 14px; border:1px solid #bde4d7; border-radius:8px; background:#effaf6; color:#28745d; font-size:13px; }
+        .message.error { border-color:#f0caca; background:#fff5f5; color:#a83e3e; }
+        @media(max-width:1100px) { .sidebar { width:224px; } .main-area { margin-left:224px; } .page-content { padding:26px 24px 40px; } }
+        @media(max-width:760px) {
+            .sidebar { width:260px; transform:translateX(-100%); transition:transform .24s ease; box-shadow:20px 0 50px rgba(20,42,67,.18); }
+            .sidebar.open { transform:translateX(0); }
+            .sidebar-overlay.show { display:block; position:fixed; z-index:45; inset:0; background:rgba(12,29,47,.42); backdrop-filter:blur(2px); }
+            .main-area { margin-left:0; }
+            .topbar { height:62px; padding:0 16px; }
+            .menu-toggle { display:grid; place-items:center; }
+            .date-display, .topbar-divider { display:none; }
+            .page-content { padding:22px 16px 36px; }
+            .breadcrumb { font-size:11px; }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-<div class="shell">
-<aside class="sidebar">
-<a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">DR</span><span class="brand-copy"><strong>Digital Receipt</strong><small>Transaction workspace</small></span></a>
-<div class="nav-label">Workspace</div>
-<a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><span class="nav-icon">▦</span><span>Overview</span></a>
-<a class="nav-link {% if request.resolver_match.url_name == 'transaction_list' %}active{% endif %}" href="{% url 'transaction_list' %}"><span class="nav-icon">↔</span><span>Transactions</span></a>
-<a class="nav-link {% if request.resolver_match.url_name == 'transaction_create' %}active{% endif %}" href="{% url 'transaction_create' %}"><span class="nav-icon">＋</span><span>New transaction</span></a>
-<div class="side-bottom"><div class="user-chip"><span class="avatar">{{ request.user.username|slice:":1"|upper }}</span><span class="user-copy"><strong>{{ request.user.username }}</strong><small>Workspace member</small></span></div><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="nav-link" type="submit" style="width:100%;border:0;background:transparent;text-align:left;cursor:pointer"><span class="nav-icon">↪</span><span>Sign out</span></button></form></div>
-</aside>
-<div class="main">
-<header class="topbar"><div class="crumb">Workspace <span class="muted">/</span> <strong>{% block breadcrumb %}Overview{% endblock %}</strong></div><div class="top-actions"><span class="muted">{{ request.user.username }}</span></div></header>
-<main class="content">
-{% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
-{% block content %}{% endblock %}
-</main>
+
+{% if request.user.is_authenticated %}
+
+<div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <a href="{% url 'dashboard' %}" class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div>
+                <div class="brand-name">ReceiptPro</div>
+                <div class="brand-subtitle">Business Management</div>
+            </div>
+        </a>
+
+        <nav>
+            <div class="nav-section">
+                <div class="nav-heading">Workspace</div>
+
+                <a href="{% url 'dashboard' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Overview</span>
+                </a>
+
+                <a href="{% url 'transaction_create' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'transaction_create' %}active{% endif %}">
+                    <i class="fa-solid fa-circle-plus"></i>
+                    <span>New Transaction</span>
+                </a>
+
+                <a href="{% url 'transaction_list' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'transaction_list' %}active{% endif %}">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    <span>Transactions</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-heading">Account</div>
+
+                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link logout-button">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Sign out</span>
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="user-card">
+                <div class="user-avatar">
+                    {{ request.user.username|first|upper }}
+                </div>
+                <div>
+                    <div class="user-name">
+                        {{ request.user.get_full_name|default:request.user.username }}
+                    </div>
+                    <div class="user-role">System User</div>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<style>
+
+.page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    color: #4f46e5;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+
+.page-head h1 {
+    font-size: 29px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #172033;
+}
+
+.subtext {
+    color: #8791a5;
+    font-size: 13px;
+    margin-top: 9px;
+}
+
+.subtext strong {
+    color: #374151;
+}
+
+/* DASHBOARD STATISTICS */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.stat {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #e8ebf2;
+    border-radius: 14px;
+    padding: 23px;
+    min-width: 0;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(23, 32, 51, .07);
+}
+
+.stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #8791a5;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stat-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #eef2ff;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    flex-shrink: 0;
+}
+
+.stat:nth-child(2) .stat-icon {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.stat:nth-child(3) .stat-icon {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.stat:nth-child(4) .stat-icon {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.stat-value {
+    font-size: clamp(22px, 2vw, 29px);
+    font-weight: 800;
+    color: #172033;
+    letter-spacing: -.8px;
+    margin-top: 19px;
+    overflow-wrap: anywhere;
+}
+
+.stat-note {
+    color: #9ca3af;
+    font-size: 11px;
+    margin-top: 8px;
+}
+
+/* TRANSACTIONS PANEL */
+
+.panel {
+    background: #ffffff;
+    border: 1px solid #e8ebf2;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.panel-head {
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.panel-head h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #172033;
+    letter-spacing: -.3px;
+}
+
+.btn-light {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.btn-light:hover {
+    background: #e9eaf0;
+}
+
+/* TABLE */
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+    text-align: left;
+}
+
+.table-wrap thead {
+    background: #f9fafc;
+}
+
+.table-wrap th {
+    color: #8791a5;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    padding: 15px 20px;
+    white-space: nowrap;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.table-wrap td {
+    padding: 17px 20px;
+    border-bottom: 1px solid #f0f2f6;
+    color: #596579;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.table-wrap tbody tr {
+    transition: background .15s ease;
+}
+
+.table-wrap tbody tr:hover {
+    background: #fafbff;
+}
+
+.table-wrap tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-wrap td strong {
+    color: #263248;
+    font-weight: 700;
+}
+
+.table-wrap .amount {
+    color: #172033;
+    font-weight: 800;
+}
+
+/* STATUS LABELS */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.status-completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.status-pending {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.status-cancelled,
+.status-failed {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+/* EMPTY STATE */
+
+.empty {
+    padding: 65px 20px;
+    text-align: center;
+    color: #8791a5;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.empty strong {
+    display: block;
+    color: #172033;
+    font-size: 17px;
+    margin-bottom: 7px;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 1100px) {
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .page-content {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 650px) {
+    .page-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-head h1 {
+        font-size: 23px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .stat {
+        padding: 19px;
+    }
+
+    .panel-head {
+        padding: 17px;
+    }
+}
+</style>
+
+    <!-- MAIN APPLICATION -->
+    <main class="main-area">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <button class="menu-toggle"
+                        id="menuToggle"
+                        type="button"
+                        aria-label="Open navigation">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div class="breadcrumb">
+                    Digital Receipt System
+                    <span style="margin: 0 7px;">/</span>
+                    <strong>{% block breadcrumb %}Workspace{% endblock %}</strong>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="date-display" id="currentDate"></div>
+
+                <div class="topbar-divider"></div>
+
+                <div class="topbar-user">
+                    <div class="topbar-avatar">
+                        {{ request.user.username|first|upper }}
+                    </div>
+                    <span>{{ request.user.username }}</span>
+                </div>
+            </div>
+
+        </header>
+
+        <section class="page-content">
+
+{% else %}
+
+    <!-- LOGIN / PUBLIC PAGE LAYOUT -->
+    <main class="auth-page">
+
+{% endif %}
+
+        <!-- DJANGO NOTIFICATIONS -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- PAGE CONTENT -->
+        {% block content %}
+        {% endblock %}
+
+{% if request.user.is_authenticated %}
+
+        </section>
+    </main>
 </div>
-</div>
+
+{% else %}
+
+    </main>
+
+{% endif %}
+
+<!-- MOBILE SIDEBAR AND DATE -->
+<script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    function closeSidebar() {
+        sidebar?.classList.remove('open');
+        overlay?.classList.remove('show');
+    }
+
+    menuToggle?.addEventListener('click', () => {
+        sidebar?.classList.toggle('open');
+        overlay?.classList.toggle('show');
+    });
+
+    overlay?.addEventListener('click', closeSidebar);
+
+    const dateElement = document.getElementById('currentDate');
+
+    if (dateElement) {
+        dateElement.textContent = new Intl.DateTimeFormat('en-UG', {
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        }).format(new Date());
+    }
+</script>
+
 {% block scripts %}{% endblock %}
-</body></html>
+
+</body>
+</html>
