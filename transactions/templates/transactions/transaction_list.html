@@ -1,0 +1,168 @@
+
+{% extends "transactions/base.html" %}
+
+{% block title %}Transaction History | Digital Receipt System{% endblock %}
+{% block breadcrumb %}Transaction History{% endblock %}
+
+{% block content %}
+<style>
+.transaction-page { display:grid; gap:22px; }
+.transaction-heading {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:16px; flex-wrap:wrap;
+}
+.transaction-heading h1 { margin:5px 0 7px; }
+.transaction-heading p { margin:0; color:var(--muted,#64748b); }
+.transaction-toolbar {
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    padding:17px; border-bottom:1px solid var(--border,#e5e7eb);
+}
+.transaction-toolbar input,
+.transaction-toolbar select {
+    min-height:42px; padding:9px 12px; border:1px solid var(--border,#dce2ea);
+    border-radius:9px; background:#fff; color:#172b4d; min-width:145px;
+}
+.transaction-toolbar input[type="search"] { flex:1; min-width:220px; }
+.transaction-toolbar button,.transaction-toolbar a { white-space:nowrap; }
+.history-caption { padding:15px 18px; color:#64748b; font-size:13px; }
+.history-table { width:100%; border-collapse:collapse; }
+.history-table th {
+    background:#f8fafc; color:#64748b; font-size:11px;
+    text-transform:uppercase; letter-spacing:.055em; font-weight:700;
+    padding:14px 16px; text-align:left; white-space:nowrap;
+}
+.history-table td {
+    padding:15px 16px; border-top:1px solid #edf0f4;
+    font-size:13px; vertical-align:middle;
+}
+.history-table tr:hover td { background:#fafcff; }
+.receipt-reference { font-weight:750; color:#1d4ed8; }
+.customer-name { font-weight:650; color:#172b4d; }
+.secondary-text { display:block; color:#8491a5; font-size:11px; margin-top:4px; }
+.transaction-total { font-weight:750; color:#172b4d; white-space:nowrap; }
+.history-status {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 9px; border-radius:20px; font-size:11px; font-weight:700;
+}
+.history-status::before {
+    content:""; width:6px; height:6px; border-radius:50%; background:currentColor;
+}
+.history-status.status-completed { color:#15803d; background:#dcfce7; }
+.history-status.status-cancelled { color:#b91c1c; background:#fee2e2; }
+.view-receipt { color:#2563eb; font-weight:700; text-decoration:none; white-space:nowrap; }
+.view-receipt:hover { text-decoration:underline; }
+.history-empty { padding:55px 20px; text-align:center; }
+.history-empty h3 { margin:12px 0 6px; }
+.history-empty p { color:#64748b; margin:0 0 18px; }
+.history-empty-icon {
+    width:54px; height:54px; border-radius:16px; margin:auto;
+    display:grid; place-items:center; background:#eff6ff;
+    color:#2563eb; font-size:24px;
+}
+@media(max-width:760px) {
+    .transaction-toolbar { align-items:stretch; }
+    .transaction-toolbar input,.transaction-toolbar select,
+    .transaction-toolbar button,.transaction-toolbar a { width:100%; }
+    .history-table { min-width:850px; }
+}
+</style>
+
+<div class="transaction-page">
+    <section class="transaction-heading">
+        <div>
+            <div class="eyebrow">BUSINESS RECORDS</div>
+            <h1>Transaction history</h1>
+            <p>Find completed transactions, review cancelled records and retrieve receipts.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'transaction_create' %}">
+            ＋ Record transaction
+        </a>
+    </section>
+
+    <section class="panel">
+        <form method="get" class="transaction-toolbar">
+            <input
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search receipt number or customer..."
+                aria-label="Search transactions"
+            >
+
+            <select name="status" aria-label="Filter by status">
+                <option value="">All statuses</option>
+                <option value="COMPLETED" {% if status == "COMPLETED" %}selected{% endif %}>Completed</option>
+                <option value="CANCELLED" {% if status == "CANCELLED" %}selected{% endif %}>Cancelled</option>
+            </select>
+
+            <input type="date" name="from" value="{{ date_from }}" aria-label="Start date">
+            <input type="date" name="to" value="{{ date_to }}" aria-label="End date">
+
+            <button class="btn btn-primary" type="submit">Apply filters</button>
+            <a class="btn btn-light" href="{% url 'transaction_list' %}">Reset</a>
+        </form>
+
+        <div class="history-caption">
+            Showing matching transaction records (up to 200 results).
+        </div>
+
+        {% if transactions %}
+        <div class="table-wrap">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Receipt reference</th>
+                        <th>Customer</th>
+                        <th>Date recorded</th>
+                        <th>Recorded by</th>
+                        <th>Payment method</th>
+                        <th>Total amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in transactions %}
+                    <tr>
+                        <td>
+                            <span class="receipt-reference">{{ item.receipt_number }}</span>
+                            <span class="secondary-text">Receipt record</span>
+                        </td>
+                        <td>
+                            <span class="customer-name">{{ item.customer.customer_name|default:"Walk-in customer" }}</span>
+                        </td>
+                        <td>
+                            {{ item.transaction_date|date:"d M Y" }}
+                            <span class="secondary-text">{{ item.transaction_date|date:"H:i" }}</span>
+                        </td>
+                        <td>{{ item.recorded_by.username }}</td>
+                        <td>{{ item.get_payment_method_display }}</td>
+                        <td class="transaction-total">UGX {{ item.total_amount|floatformat:0 }}</td>
+                        <td>
+                            <span class="history-status status-{{ item.status|lower }}">
+                                {{ item.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a class="view-receipt" href="{% url 'receipt_detail' item.pk %}">
+                                Open receipt →
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="history-empty">
+            <div class="history-empty-icon">⌕</div>
+            <h3>No transactions found</h3>
+            <p>No records match your current search or filters.</p>
+            <a class="btn btn-primary" href="{% url 'transaction_create' %}">
+                Record your first transaction
+            </a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

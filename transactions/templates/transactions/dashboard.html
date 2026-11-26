@@ -1,97 +1,17 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Digital Receipt System</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f1f5f9;
-            color: #1e293b;
-        }
-        header {
-            background: #173b68;
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-        main { padding: 30px; }
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-        }
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.04);
-        }
-        .card h3 { color: #64748b; font-size: 15px; }
-        .card p { font-size: 25px; font-weight: bold; }
-        button {
-            background: #fff;
-            color: #173b68;
-            border: 0;
-            border-radius: 6px;
-            padding: 10px 16px;
-            cursor: pointer;
-        }
-        @media(max-width: 600px) {
-            header { flex-direction: column; align-items: flex-start; }
-            main { padding: 18px; }
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <div>
-        <strong>Digital Receipt System</strong>
-        <p>Transaction Management Dashboard</p>
-    </div>
-
-    <form method="POST" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Sign Out</button>
-    </form>
-</header>
-
-<main>
-    <h2>Welcome, {{ request.user.username }}!</h2>
-    <p>Manage your business transactions and receipts.</p>
-
-    <div class="cards">
-        <div class="card">
-            <h3>Total Transactions</h3>
-            <p>0</p>
-        </div>
-
-        <div class="card">
-            <h3>Completed Transactions</h3>
-            <p>0</p>
-        </div>
-
-        <div class="card">
-            <h3>Receipts Generated</h3>
-            <p>0</p>
-        </div>
-    </div>
-
-    <div class="card" style="margin-top: 25px;">
-        <h3>Getting Started</h3>
-        <p>Your transaction management dashboard is ready.</p>
-        <p>Transaction recording and receipt generation will be added next.</p>
-    </div>
-</main>
-
-</body>
-</html>
+{% extends "transactions/base.html" %}
+{% block title %}Overview | Digital Receipt System{% endblock %}
+{% block breadcrumb %}Overview{% endblock %}
+{% block content %}
+<section class="page-head"><div><div class="eyebrow">Business overview</div><h1>Good to see you, {{ request.user.username }}.</h1><p class="subtext">Here is what is happening at <strong>{{ business.business_name }}</strong> today.</p></div><a class="btn btn-primary" href="{% url 'transaction_create' %}">＋ Record transaction</a></section>
+<section class="stats">
+<div class="stat"><div class="stat-top"><span>Today's recorded sales</span><span class="stat-icon">↗</span></div><div class="stat-value">UGX {{ today_total|floatformat:0 }}</div><div class="stat-note">Completed transactions today</div></div>
+<div class="stat"><div class="stat-top"><span>All transactions</span><span class="stat-icon">↔</span></div><div class="stat-value">{{ total_count }}</div><div class="stat-note">Records in this workspace</div></div>
+<div class="stat"><div class="stat-top"><span>Completed</span><span class="stat-icon">✓</span></div><div class="stat-value">{{ completed_count }}</div><div class="stat-note">Successfully recorded</div></div>
+<div class="stat"><div class="stat-top"><span>Receipts issued</span><span class="stat-icon">▤</span></div><div class="stat-value">{{ receipt_count }}</div><div class="stat-note">Receipt records created</div></div>
+</section>
+<section class="panel"><div class="panel-head"><h2>Recent transactions</h2><a class="btn btn-light" href="{% url 'transaction_list' %}">View all →</a></div>
+{% if recent_transactions %}<div class="table-wrap"><table><thead><tr><th>Receipt number</th><th>Customer</th><th>Date</th><th>Payment</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>
+{% for item in recent_transactions %}<tr><td><strong>{{ item.receipt_number }}</strong></td><td>{{ item.customer.customer_name|default:"Walk-in customer" }}</td><td>{{ item.transaction_date|date:"d M Y, H:i" }}</td><td>{{ item.get_payment_method_display }}</td><td class="amount">UGX {{ item.total_amount|floatformat:0 }}</td><td><span class="status status-{{ item.status|lower }}">{{ item.get_status_display }}</span></td><td><a href="{% url 'receipt_detail' item.pk %}" style="color:#2463eb;font-weight:700">Open</a></td></tr>{% endfor %}
+</tbody></table></div>{% else %}<div class="empty"><strong>No transactions yet</strong>Your first recorded transaction will appear here.<br><br><a class="btn btn-primary" href="{% url 'transaction_create' %}">Record first transaction</a></div>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,732 @@
+
+{% extends "transactions/base.html" %}
+
+{% block title %}Receipt {{ record.receipt_number }} | Digital Receipt System{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'transaction_list' %}">Transactions</a> / Receipt
+{% endblock %}
+
+{% block extra_head %}
+<style>
+.receipt-page {
+    max-width: 1050px;
+    margin: 0 auto;
+}
+
+.receipt-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.receipt-heading h1 {
+    margin: 5px 0 7px;
+}
+
+.receipt-heading p {
+    margin: 0;
+    color: #78879a;
+    font-size: 13px;
+}
+
+.receipt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.receipt-sheet {
+    background: #fff;
+    border: 1px solid #e5eaf0;
+    border-radius: 15px;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 42px 48px;
+    box-shadow: 0 8px 30px rgba(20, 40, 70, .06);
+    color: #243247;
+}
+
+.receipt-topline {
+    height: 5px;
+    background: #183b61;
+    margin: -42px -48px 35px;
+    border-radius: 15px 15px 0 0;
+}
+
+.receipt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding-bottom: 27px;
+    border-bottom: 1px solid #e9edf2;
+}
+
+.receipt-business {
+    min-width: 0;
+}
+
+.receipt-brand-label {
+    color: #718198;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.receipt-business h2 {
+    color: #173653;
+    font-size: 25px;
+    line-height: 1.25;
+    font-weight: 850;
+    margin: 0 0 10px;
+    overflow-wrap: anywhere;
+}
+
+.receipt-business p {
+    color: #748196;
+    font-size: 12px;
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+.receipt-stamp {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.receipt-stamp span {
+    display: block;
+    color: #718198;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+.receipt-stamp strong {
+    color: #1e4267;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.receipt-status {
+    display: inline-flex;
+    padding: 7px 12px;
+    border-radius: 30px;
+    background: #e9f7ef;
+    color: #187343;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: .7px;
+    margin-top: 12px;
+}
+
+.receipt-status.cancelled {
+    background: #fff0f0;
+    color: #b42318;
+}
+
+.receipt-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    padding: 25px 0;
+    border-bottom: 1px solid #e9edf2;
+}
+
+.detail-label {
+    color: #8995a5;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    font-size: 9px;
+    font-weight: 850;
+    margin-bottom: 8px;
+}
+
+.detail-value {
+    color: #293d53;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.detail-secondary {
+    color: #8290a0;
+    font-size: 11px;
+    margin-top: 3px;
+    line-height: 1.5;
+}
+
+.cancelled-notice {
+    padding: 15px 17px;
+    margin: 22px 0;
+    background: #fff5f5;
+    border: 1px solid #f4d1d1;
+    border-left: 4px solid #c43d3d;
+    border-radius: 8px;
+    color: #8d2929;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.cancelled-notice strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.items-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 27px 0 13px;
+}
+
+.items-heading h3 {
+    color: #243c56;
+    font-size: 14px;
+    font-weight: 850;
+    margin: 0;
+}
+
+.items-heading span {
+    color: #8793a3;
+    font-size: 10px;
+}
+
+.receipt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.receipt-table thead {
+    background: #f3f6fa;
+}
+
+.receipt-table th {
+    color: #66788d;
+    padding: 13px 12px;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: .7px;
+    text-transform: uppercase;
+    text-align: left;
+    border-bottom: 1px solid #e6ebf1;
+}
+
+.receipt-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #edf0f4;
+    color: #34465a;
+    vertical-align: middle;
+}
+
+.receipt-table tbody tr:last-child td {
+    border-bottom: 1px solid #dfe5ec;
+}
+
+.receipt-table .numeric {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.receipt-table .item-name {
+    font-weight: 750;
+    color: #293e55;
+    overflow-wrap: anywhere;
+}
+
+.receipt-total-area {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 22px;
+}
+
+.receipt-total-box {
+    width: 285px;
+}
+
+.receipt-total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 7px 0;
+    color: #718096;
+    font-size: 12px;
+}
+
+.receipt-grand-total {
+    margin-top: 9px;
+    padding: 17px 18px;
+    border-radius: 9px;
+    background: #183b61;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.receipt-grand-total span:first-child {
+    font-size: 11px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+.receipt-grand-total strong {
+    font-size: 19px;
+    font-weight: 850;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.receipt-footer {
+    text-align: center;
+    margin-top: 38px;
+    padding-top: 23px;
+    border-top: 1px dashed #d9e0e8;
+}
+
+.receipt-footer .thank-you {
+    color: #1d456b;
+    font-size: 14px;
+    font-weight: 850;
+    margin-bottom: 7px;
+}
+
+.receipt-footer p {
+    color: #8793a3;
+    font-size: 10px;
+    line-height: 1.7;
+    margin: 4px 0;
+}
+
+.receipt-footer .system-label {
+    margin-top: 17px;
+    font-size: 9px;
+    letter-spacing: .6px;
+}
+
+.receipt-management {
+    max-width: 850px;
+    margin: 20px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.management-card {
+    background: #fff;
+    border: 1px solid #e6ebf1;
+    border-radius: 11px;
+    padding: 17px;
+}
+
+.management-card h3 {
+    margin: 0 0 6px;
+    color: #263c55;
+    font-size: 13px;
+}
+
+.management-card p {
+    color: #8290a0;
+    font-size: 11px;
+    line-height: 1.6;
+    margin: 0 0 13px;
+}
+
+.cancel-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cancel-form input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dce3ec;
+    border-radius: 8px;
+    padding: 11px 12px;
+    font: inherit;
+    font-size: 12px;
+}
+
+.cancel-form input:focus {
+    outline: none;
+    border-color: #3976c5;
+}
+
+@media(max-width: 650px) {
+    .receipt-heading {
+        flex-direction: column;
+    }
+
+    .receipt-sheet {
+        padding: 25px 18px;
+    }
+
+    .receipt-topline {
+        margin: -25px -18px 25px;
+    }
+
+    .receipt-header {
+        flex-direction: column;
+    }
+
+    .receipt-stamp {
+        text-align: left;
+    }
+
+    .receipt-details {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .receipt-table {
+        font-size: 10px;
+    }
+
+    .receipt-table th,
+    .receipt-table td {
+        padding: 11px 6px;
+    }
+
+    .receipt-management {
+        grid-template-columns: 1fr;
+    }
+
+    .receipt-total-box {
+        width: 100%;
+    }
+
+    .receipt-grand-total strong {
+        font-size: 16px;
+    }
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 13mm;
+    }
+
+    body {
+        background: white !important;
+        color: #243247 !important;
+    }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    .receipt-sheet,
+    .receipt-sheet * {
+        visibility: visible !important;
+    }
+
+    .receipt-sheet {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+    }
+
+    .receipt-topline {
+        margin: -20px -20px 25px !important;
+        border-radius: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .receipt-grand-total {
+        background: #183b61 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .receipt-status,
+    .receipt-status.cancelled {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .receipt-table thead {
+        background: #f3f6fa !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .receipt-table tr {
+        page-break-inside: avoid;
+    }
+
+    .receipt-footer {
+        page-break-inside: avoid;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="receipt-page">
+
+    <div class="receipt-heading no-print">
+        <div>
+            <div class="eyebrow">TRANSACTION MANAGEMENT</div>
+            <h1>Receipt details</h1>
+            <p>Review, print or save this transaction receipt as a PDF.</p>
+        </div>
+
+        <div class="receipt-actions">
+            <a href="{% url 'transaction_list' %}" class="btn btn-light">
+                ← Back to transactions
+            </a>
+
+            <button type="button" class="btn btn-primary" onclick="window.print()">
+                Print / Save PDF
+            </button>
+        </div>
+    </div>
+
+    <article class="receipt-sheet" id="printable-receipt">
+
+        <div class="receipt-topline"></div>
+
+        <header class="receipt-header">
+
+            <div class="receipt-business">
+
+                <div class="receipt-brand-label">
+                    Official transaction receipt
+                </div>
+
+                <h2>{{ record.business.business_name }}</h2>
+
+                {% if record.business.address %}
+                    <p>{{ record.business.address }}</p>
+                {% endif %}
+
+                {% if record.business.phone %}
+                    <p>Tel: {{ record.business.phone }}</p>
+                {% endif %}
+
+            </div>
+
+            <div class="receipt-stamp">
+                <span>Receipt number</span>
+                <strong>{{ record.receipt_number }}</strong>
+
+                {% if record.status == "CANCELLED" %}
+                    <div class="receipt-status cancelled">CANCELLED</div>
+                {% else %}
+                    <div class="receipt-status">COMPLETED</div>
+                {% endif %}
+            </div>
+
+        </header>
+
+        <section class="receipt-details">
+
+            <div>
+                <div class="detail-label">Date and time</div>
+                <div class="detail-value">
+                    {{ record.transaction_date|date:"d M Y" }}
+                </div>
+                <div class="detail-secondary">
+                    {{ record.transaction_date|date:"H:i" }}
+                </div>
+            </div>
+
+            <div>
+                <div class="detail-label">Customer</div>
+                <div class="detail-value">
+                    {% if record.customer %}
+                        {{ record.customer.customer_name }}
+                    {% else %}
+                        Walk-in customer
+                    {% endif %}
+                </div>
+                {% if record.customer.phone %}
+                    <div class="detail-secondary">
+                        {{ record.customer.phone }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <div class="detail-label">Payment method</div>
+                <div class="detail-value">
+                    {{ record.get_payment_method_display }}
+                </div>
+                <div class="detail-secondary">Payment recorded</div>
+            </div>
+
+        </section>
+
+        {% if record.status == "CANCELLED" %}
+            <div class="cancelled-notice">
+                <strong>This transaction has been cancelled.</strong>
+                Reason: {{ record.cancellation_reason }}
+                <br>
+                {% if record.cancelled_by %}
+                    Cancelled by: {{ record.cancelled_by.username }}
+                {% endif %}
+                {% if record.cancelled_at %}
+                    · {{ record.cancelled_at|date:"d M Y, H:i" }}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="items-heading">
+            <h3>Items purchased</h3>
+            <span>{{ record.items.count }} item line(s)</span>
+        </div>
+
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th style="width:42%">Description</th>
+                    <th class="numeric">Qty</th>
+                    <th class="numeric">Unit price</th>
+                    <th class="numeric">Amount</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in record.items.all %}
+                    <tr>
+                        <td class="item-name">
+                            {{ item.item_description }}
+                        </td>
+
+                        <td class="numeric">
+                            {{ item.quantity|floatformat:2 }}
+                        </td>
+
+                        <td class="numeric">
+                            {{ item.unit_price|floatformat:2 }}
+                        </td>
+
+                        <td class="numeric">
+                            <strong>{{ item.line_total|floatformat:2 }}</strong>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">No transaction items found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="receipt-total-area">
+            <div class="receipt-total-box">
+
+                <div class="receipt-total-row">
+                    <span>Currency</span>
+                    <strong>Ugandan Shillings (UGX)</strong>
+                </div>
+
+                <div class="receipt-grand-total">
+                    <span>Total paid</span>
+                    <strong>UGX {{ record.total_amount|floatformat:2 }}</strong>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="receipt-footer">
+
+            <div class="thank-you">
+                Thank you for your business!
+            </div>
+
+            {% if record.business.receipt_footer %}
+                <p>{{ record.business.receipt_footer }}</p>
+            {% else %}
+                <p>We appreciate your visit. Please come again.</p>
+            {% endif %}
+
+            <p class="system-label">
+                RECORDED BY {{ record.recorded_by.username|upper }}
+                <br>
+                DIGITAL RECEIPT AND TRANSACTION RECORD MANAGEMENT SYSTEM
+            </p>
+
+            <p>
+                This receipt is a record of a transaction entered into this system.
+            </p>
+
+        </footer>
+
+    </article>
+
+    <div class="receipt-management no-print">
+
+        <section class="management-card">
+            <h3>Receipt printing</h3>
+            <p>
+                Use Print / Save PDF above to print or save a digital copy.
+                Recorded print actions: {{ record.receipt.print_count }}
+            </p>
+
+            <form method="post" action="{% url 'receipt_printed' record.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light">
+                    Record print action
+                </button>
+            </form>
+        </section>
+
+        {% if record.status == "COMPLETED" %}
+            <section class="management-card">
+                <h3>Cancel transaction</h3>
+                <p>
+                    Only cancel when necessary. The original transaction will
+                    remain in the system with its cancellation reason.
+                </p>
+
+                <form
+                    method="post"
+                    action="{% url 'transaction_cancel' record.pk %}"
+                    class="cancel-form"
+                    onsubmit="return confirm('Are you sure you want to cancel this transaction? The original record will be retained.');"
+                >
+                    {% csrf_token %}
+
+                    <input
+                        type="text"
+                        name="cancellation_reason"
+                        minlength="5"
+                        maxlength="500"
+                        placeholder="Enter reason for cancellation"
+                        required
+                    >
+
+                    <button type="submit" class="btn btn-danger">
+                        Cancel transaction
+                    </button>
+                </form>
+            </section>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}
